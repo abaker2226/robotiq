@@ -93,6 +93,10 @@ class communication:
       #Get status from the device
       response = self.client.read_holding_registers(0x07D0, numRegs, unit=0x0009)
 
+      if response.isError():
+        print(response)
+        return None
+
       #Instantiate output as an empty list
       output = []
 
