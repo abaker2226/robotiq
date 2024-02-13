@@ -1,56 +1,97 @@
 # http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
 cmake_minimum_required(VERSION 2.8.3)
 project(robotiq_3f_gripper_control)
-find_package(catkin REQUIRED COMPONENTS rospy message_generation roscpp robotiq_ethercat robotiq_3f_gripper_msgs)
+find_package(catkin REQUIRED COMPONENTS
+  controller_manager
+  diagnostic_updater
+  dynamic_reconfigure
+  hardware_interface
+  robotiq_3f_gripper_articulated_msgs
+  robotiq_ethercat
+  roscpp
+  rospy
+  socketcan_interface
+  std_srvs
+)
 
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-
-###################################
-## catkin message generation     ##
-###################################
+find_package(PkgConfig)
 
 catkin_python_setup()
 
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
+generate_dynamic_reconfigure_options(
+  cfg/Robotiq3FGripper.cfg
+)
+
 catkin_package(
-    CATKIN_DEPENDS rospy message_runtime roscpp robotiq_ethercat
+    LIBRARIES ${PROJECT_NAME}
+    CATKIN_DEPENDS
+        controller_manager
+        diagnostic_updater
+        dynamic_reconfigure
+        hardware_interface
+        robotiq_3f_gripper_articulated_msgs
+        robotiq_ethercat
+        roscpp
+        rospy
+        socketcan_interface
+        std_srvs
 )
 
-include_directories(include)
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
-  ${robotiq_ethercat_INCLUDE_DIRS}
-  ${robotiq_3f_gripper_msgs_INCLUDE_DIRS}
 )
 
-add_executable(3f_gripper_node
-  src/robotiq_3f_gripper_control/s_model_ethercat_node.cpp
-  src/robotiq_3f_gripper_control/s_model_ethercat_client.cpp
+add_library(${PROJECT_NAME}
+  src/${PROJECT_NAME}/robotiq_3f_gripper_api.cpp
+  src/${PROJECT_NAME}/robotiq_3f_gripper_diagnostics.cpp
+  src/${PROJECT_NAME}/robotiq_3f_gripper_hw_interface.cpp
+  src/${PROJECT_NAME}/robotiq_3f_gripper_ros.cpp
+)
+target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+)
+add_dependencies(${PROJECT_NAME}
+  ${PROJECT_NAME}_gencfg
+  ${catkin_EXPORTED_TARGETS}
 )
 
-add_dependencies(3f_gripper_node ${robotiq_3f_gripper_control_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${robotiq_3f_gripper_msgs_EXPORTED_TARGETS})
+add_executable(robotiq_3f_gripper_ethercat_node
+  src/${PROJECT_NAME}/robotiq_3f_gripper_ethercat_client.cpp
+  src/robotiq_3f_gripper_ethercat_node.cpp
+)
 
-target_link_libraries(3f_gripper_node
+target_link_libraries(robotiq_3f_gripper_ethercat_node
+   ${PROJECT_NAME}
    ${robotiq_ethercat_LIBRARIES}
    ${catkin_LIBRARIES}
 )
 
-#############
-## Install ##
-#############
+add_executable(robotiq_3f_gripper_can_node
+  src/robotiq_3f_gripper_can_node.cpp
+  src/${PROJECT_NAME}/robotiq_3f_gripper_can_client.cpp
+)
 
-# all install targets should use catkin DESTINATION variables
-# See http://ros.org/doc/groovy/api/catkin/html/adv_user_guide/variables.html
+target_link_libraries(robotiq_3f_gripper_can_node
+  ${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+)
 
-install(PROGRAMS nodes/SModelSimpleController.py nodes/SModelStatusListener.py
-	nodes/SModelTcpNode.py DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(PROGRAMS nodes/Robotiq3FGripperSimpleController.py nodes/Robotiq3FGripperStatusListener.py
+        nodes/Robotiq3FGripperTcpNode.py DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+install(TARGETS robotiq_3f_gripper_can_node ${PROJECT_NAME} robotiq_3f_gripper_ethercat_node
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+  PATTERN ".svn" EXCLUDE
+)
+
+install(DIRECTORY launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)

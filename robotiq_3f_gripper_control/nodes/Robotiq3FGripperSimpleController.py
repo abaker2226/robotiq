@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 
 # Software License Agreement (BSD License)
@@ -37,29 +37,36 @@
 # Revision $Id$
 
 """@package docstring
-Command-line interface for sending simple commands to a ROS node controlling a S-Model gripper.
+Command-line interface for sending simple commands to a ROS node controlling a 3F gripper gripper.
 
-This serves as an example for publishing messages on the 'SModelRobotOutput' topic using the 'SModel_robot_output' msg type for sending commands to a S-Model gripper. In this example, only the simple control mode is implemented. For using the advanced control mode, please refer to the Robotiq support website (support.robotiq.com).
+This serves as an example for publishing messages on the 'Robotiq3FGripperRobotOutput' topic using the 'Robotiq3FGripper_robot_output' msg type for sending commands to a 3F gripper gripper. In this example, only the simple control mode is implemented. For using the advanced control mode, please refer to the Robotiq support website (support.robotiq.com).
 """
 
-import roslib; roslib.load_manifest('robotiq_3f_gripper_control')
-import rospy
-from robotiq_3f_gripper_msgs.msg import SModelRobotOutput
-from time import sleep
+from __future__ import print_function
 
+import roslib;
+
+roslib.load_manifest('robotiq_3f_gripper_control')
+import rospy
+from robotiq_3f_gripper_articulated_msgs.msg import Robotiq3FGripperRobotOutput
+
+try:
+    input = raw_input
+except NameError:
+    pass
 
 def genCommand(char, command):
     """Update the command according to the character entered by the user."""
 
     if char == 'a':
-        command = SModelRobotOutput()
+        command = Robotiq3FGripperRobotOutput();
         command.rACT = 1
         command.rGTO = 1
         command.rSPA = 255
         command.rFRA = 150
 
     if char == 'r':
-        command = SModelRobotOutput()
+        command = Robotiq3FGripperRobotOutput();
         command.rACT = 0
 
     if char == 'c':
@@ -80,7 +87,7 @@ def genCommand(char, command):
     if char == 's':
         command.rMOD = 3
 
-    #If the command entered is a int, assign this value to rPRA
+    # If the command entered is a int, assign this value to rPRA
     try:
         command.rPRA = int(char)
         if command.rPRA > 255:
@@ -100,7 +107,6 @@ def genCommand(char, command):
         if command.rSPA < 0:
             command.rSPA = 0
 
-
     if char == 'i':
         command.rFRA += 25
         if command.rFRA > 255:
@@ -117,32 +123,32 @@ def genCommand(char, command):
 def askForCommand(command):
     """Ask the user for a command to send to the gripper."""
 
-    currentCommand  = 'Simple S-Model Controller\n-----\nCurrent command:'
-    currentCommand += ' rACT = '  + str(command.rACT)
+    currentCommand = 'Simple 3F gripper Controller\n-----\nCurrent command:'
+    currentCommand += ' rACT = ' + str(command.rACT)
     currentCommand += ', rMOD = ' + str(command.rMOD)
     currentCommand += ', rGTO = ' + str(command.rGTO)
     currentCommand += ', rATR = ' + str(command.rATR)
-    currentCommand += ', rGLV = ' + str(command.rGLV)
-    currentCommand += ', rICF = ' + str(command.rICF)
-    currentCommand += ', rICS = ' + str(command.rICS)
+    ##    currentCommand += ', rGLV = ' + str(command.rGLV)
+    ##    currentCommand += ', rICF = ' + str(command.rICF)
+    ##    currentCommand += ', rICS = ' + str(command.rICS)
     currentCommand += ', rPRA = ' + str(command.rPRA)
     currentCommand += ', rSPA = ' + str(command.rSPA)
     currentCommand += ', rFRA = ' + str(command.rFRA)
 
-    #We only show the simple control mode
-    currentCommand += ', rPRB = ' + str(command.rPRB)
-    currentCommand += ', rSPB = ' + str(command.rSPB)
-    currentCommand += ', rFRB = ' + str(command.rFRB)
-    currentCommand += ', rPRC = ' + str(command.rPRC)
-    currentCommand += ', rSPC = ' + str(command.rSPC)
-    currentCommand += ', rFRC = ' + str(command.rFRC)
-    currentCommand += ', rPRS = ' + str(command.rPRS)
-    currentCommand += ', rSPS = ' + str(command.rSPS)
-    currentCommand += ', rFRS = ' + str(command.rFRS)
+    # We only show the simple control mode
+    ##    currentCommand += ', rPRB = ' + str(command.rPRB)
+    ##    currentCommand += ', rSPB = ' + str(command.rSPB)
+    ##    currentCommand += ', rFRB = ' + str(command.rFRB)
+    ##    currentCommand += ', rPRC = ' + str(command.rPRC)
+    ##    currentCommand += ', rSPC = ' + str(command.rSPC)
+    ##    currentCommand += ', rFRC = ' + str(command.rFRC)
+    ##    currentCommand += ', rPRS = ' + str(command.rPRS)
+    ##    currentCommand += ', rSPS = ' + str(command.rSPS)
+    ##    currentCommand += ', rFRS = ' + str(command.rFRS)
 
-    print currentCommand
+    print(currentCommand)
 
-    strAskForCommand  = '-----\nAvailable commands\n\n'
+    strAskForCommand = '-----\nAvailable commands\n\n'
     strAskForCommand += 'r: Reset\n'
     strAskForCommand += 'a: Activate\n'
     strAskForCommand += 'c: Close\n'
@@ -159,20 +165,19 @@ def askForCommand(command):
 
     strAskForCommand += '-->'
 
-    return raw_input(strAskForCommand)
+    return input(strAskForCommand)
+
 
 def publisher():
-    """Main loop which requests new commands and publish them on the SModelRobotOutput topic."""
+    """Main loop which requests new commands and publish them on the Robotiq3FGripperRobotOutput topic."""
 
-    rospy.init_node('SModelSimpleController')
+    rospy.init_node('Robotiq3FGripperSimpleController')
 
-    topic_name = rospy.get_param('~topic', 'SModelRobotOutput')
-    pub = rospy.Publisher(topic_name, SModelRobotOutput)
+    pub = rospy.Publisher('Robotiq3FGripperRobotOutput', Robotiq3FGripperRobotOutput)
 
-    command = SModelRobotOutput()
+    command = Robotiq3FGripperRobotOutput();
 
     while not rospy.is_shutdown():
-
         command = genCommand(askForCommand(command), command)
 
         pub.publish(command)
