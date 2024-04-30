@@ -78,8 +78,12 @@ class communication:
       for i in range(0, len(data)//2):
          message.append((data[2*i] << 8) + data[2*i+1])
 
-      #To do!: Implement try/except
-      self.client.write_registers(0x03E8, message, unit=0x0009)
+      try:
+         self.client.write_registers(0x03E8, message, unit=0x0009)
+      except:
+         print("Modbus write operation failure")
+         return False
+      return True
 
    def getStatus(self, numBytes):
       """Sends a request to read, wait for the response and returns the Gripper status. The method gets the number of bytes to read as an argument"""
