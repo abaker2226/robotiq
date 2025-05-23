@@ -1,9 +1,9 @@
 <launch>
     <arg name="sim" default="false"/>
-    <arg name="right_gripper_comport" default="/dev/ttyRobotiq1" unless="$(arg sim)"/>
-    <arg name="left_gripper_comport" default="/dev/ttyRobotiq0" unless="$(arg sim)"/>
-    <arg name="right_gripper_stroke" default="0.085"/>
-    <arg name="left_gripper_stroke" default="0.085"/>
+    <arg name="right_gripper_comport" default="/dev/ttyACM1" unless="$(arg sim)"/>
+    <arg name="left_gripper_comport" default="/dev/ttyACM0" unless="$(arg sim)"/>
+    <arg name="right_gripper_stroke" default="0.140"/>
+    <arg name="left_gripper_stroke" default="0.140"/>
     <arg name="rate" default="50"/>
     <arg name="run_test" default="true"/>
 	        
