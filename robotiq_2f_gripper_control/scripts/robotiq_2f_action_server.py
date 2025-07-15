@@ -214,18 +214,19 @@ if __name__ == "__main__":
     # Get Node parameters
     comport = rospy.get_param('~comport','/dev/ttyUSB0')
     baud = rospy.get_param('~baud','115200')
-    stroke = rospy.get_param('~stroke', 0.085)                # Default stroke is 85mm (Small C / 2 finger adaptive gripper model)
-    joint_name = rospy.get_param('~joint_name', 'finger_joint')    
-    sim = rospy.get_param('~sim', False)    
+    stroke = rospy.get_param('~stroke', 0.140)
+    joint_name = rospy.get_param('~joint_name', 'finger_joint')
+    sim = rospy.get_param('~sim', False)
+    device_id = rospy.get_param('~device_id', 0)
 
     # Create instance of Robotiq Gripper Driver
-    if sim: # Use simulated gripper
-        gripper_driver = Robotiq2FingerSimulatedGripperDriver( stroke=stroke, joint_name=joint_name)    
-    else:   # Try to connect to a real gripper 
-        gripper_driver = Robotiq2FingerGripperDriver( comport=comport, baud=baud, stroke=stroke, joint_name=joint_name)
-    # Start action server 
+    if sim:
+        gripper_driver = Robotiq2FingerSimulatedGripperDriver(stroke=stroke, joint_name=joint_name)
+    else:
+        gripper_driver = Robotiq2FingerGripperDriver(device_id=device_id, comport=comport, baud=baud, stroke=stroke, joint_name=joint_name)
+    # Start action server
     server = CommandGripperActionServer(rospy.get_namespace(), 'command_robotiq_action', gripper_driver)
-    
+
     # Send and Request data from gripper and update joint state every `r`[Hz]
     r = rospy.Rate(rospy.get_param('~rate', 50 if not sim else 20))
     while not rospy.is_shutdown():
@@ -233,5 +234,4 @@ if __name__ == "__main__":
         r.sleep()
 
     rospy.spin()
-    
     

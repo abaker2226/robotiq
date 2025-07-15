@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import serial
 from serial.serialutil import SerialException
 
@@ -162,5 +160,3 @@ class Robotiq2FingerGripper:
 
     def get_current(self):
         return self.gCU * 0.1
-
-    

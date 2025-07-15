@@ -74,14 +74,14 @@ class Robotiq2FingerGripperDriver:
                             1: Driver is running
                             2: Gripper has been activated
     """
-    def __init__(self, comport = '/dev/ttyUSB0', baud = '115200', stroke = 0.085, joint_name='finger_joint'):
+    def __init__(self,device_id=0, comport = '/dev/ttyUSB0', baud = '115200', stroke = 0.085, joint_name='finger_joint'):
         self._comport = comport
         self._baud = baud
         self._joint_name = joint_name          
         
 
         # Instanciate and open communication with gripper.
-        self._gripper = Robotiq2FingerGripper(device_id=0, stroke=stroke, comport=self._comport, baud=self._baud)
+        self._gripper = Robotiq2FingerGripper(device_id=device_id, stroke=stroke, comport=self._comport, baud=self._baud)
         
         self._max_joint_limit = 0.8
         if( self._gripper.stroke == 0.140 ):

@@ -59,3 +59,10 @@ if __name__ == '__main__':
     # publish and subscribe over ROS.
     rospy.init_node('robotiq_2f_client')
     result = operate_gripper()
+    
+    
+    
+    
+    
+    
+    

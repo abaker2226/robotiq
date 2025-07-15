@@ -1,0 +1,32 @@
+<launch>
+    <!-- RIGHT gripper parameters -->
+    <arg name="right_comport"   default="/dev/ttyACM2"/>
+    <arg name="right_joint"     default="right_finger_joint"/>
+    <arg name="right_device_id"  default="9"/>
+    <arg name="right_stroke"    default="0.140"/>
+    <arg name="baud"            default="115200"/>
+    <arg name="sim"             default="false"/>
+    <arg name="rate"            default="50"/>
+
+    <!-- RIGHT GRIPPER action server -->
+    <node pkg="robotiq_2f_gripper_control"
+          type="robotiq_2f_action_server.py"
+          name="robotiq_2f_action_server"
+          ns="right_gripper"
+          output="screen">
+        <param name="comport" value="$(arg right_comport)" />
+        <param name="baud" value="$(arg baud)" />
+        <param name="stroke" value="$(arg right_stroke)" />
+        <param name="joint_name" value="$(arg right_joint)" />
+        <param name="sim" value="$(arg sim)" />
+        <param name="rate" value="$(arg rate)" />
+        <param name="device_id" value="$(arg right_device_id)" />
+    </node>
+
+    <!-- RIGHT GRIPPER client (cycler/holder) -->
+    <node pkg="robotiq_2f_gripper_control"
+          type="robotiq_gripper_right.py"
+          name="robotiq_gripper_right"
+          ns="right_gripper"
+          output="screen" />
+</launch>

@@ -56,9 +56,11 @@ include_directories(
 #############
 
 catkin_install_python(PROGRAMS 
-                        scripts/robotiq_2f_action_server.py
-                        scripts/robotiq_2f_action_client_example.py
-                        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+    scripts/robotiq_2f_action_server.py
+    scripts/robotiq_2f_action_client_example.py
+    scripts/robotiq_gripper_right.py
+    scripts/robotiq_gripper_left.py
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 ## Mark executables and/or libraries for installation
 # install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node

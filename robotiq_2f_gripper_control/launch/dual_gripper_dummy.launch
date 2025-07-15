@@ -1,0 +1,49 @@
+<launch>
+    <!-- LEFT gripper action server -->
+    <node pkg="robotiq_2f_gripper_control"
+          type="robotiq_2f_action_server.py"
+          name="robotiq_2f_action_server"
+          ns="left_gripper"
+          output="screen">
+        <param name="comport" value="/dev/ttyACM0" />
+        <param name="baud" value="115200" />
+        <param name="stroke" value="0.140" />
+        <param name="joint_name" value="left_finger_joint" />
+        <param name="sim" value="false" />
+        <param name="rate" value="50" />
+        <param name="device_id" value="9" />
+    </node>
+
+    <!-- RIGHT gripper action server -->
+    <node pkg="robotiq_2f_gripper_control"
+          type="robotiq_2f_action_server.py"
+          name="robotiq_2f_action_server"
+          ns="right_gripper"
+          output="screen">
+        <param name="comport" value="/dev/ttyACM2" />
+        <param name="baud" value="115200" />
+        <param name="stroke" value="0.140" />
+        <param name="joint_name" value="right_finger_joint" />
+        <param name="sim" value="false" />
+        <param name="rate" value="50" />
+        <param name="device_id" value="9" />
+    </node>
+
+    <!-- LEFT gripper client -->
+    <node pkg="robotiq_2f_gripper_control"
+          type="robotiq_gripper_left.py"
+          name="robotiq_gripper_left"
+          output="screen" />
+
+    <!-- RIGHT gripper client -->
+    <node pkg="robotiq_2f_gripper_control"
+          type="robotiq_gripper_right.py"
+          name="robotiq_gripper_right"
+          output="screen" />
+
+    <!-- Dummy command publisher -->
+    <node pkg="robotiq_2f_gripper_control"
+          type="dummy_node.py"
+          name="dummy_node"
+          output="screen"/>
+</launch>

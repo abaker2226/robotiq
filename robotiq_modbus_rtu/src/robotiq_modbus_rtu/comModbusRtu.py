@@ -50,7 +50,8 @@ from math import ceil
 
 class communication:
 
-   def __init__(self):
+   def __init__(self, device_id=9):
+      self.device_id = device_id
       self.client = None
 
    def connectToDevice(self, device):
@@ -107,3 +108,4 @@ class communication:
 
       #Output the result
       return output
+      
